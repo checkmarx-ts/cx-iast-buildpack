@@ -20,3 +20,16 @@ which jq
 which sed
 echo "environment:"
 env
+
+
+IAST_SERVER=$(jq '.["user-provided"][] | select (.name | contains("checkmarx")).credentials.iast_server')
+AGENT_URL="$IAST_SERVER/iast/compilation/download/JAVA"
+
+echo $IAST_SERVER
+echo $AGENT_URL
+
+curl -k $AGENT_URL > cx-iast-agent.zip
+unzip cx-iast-agent.zip
+
+
+ls -alR $DEPS_DIR/$IDX
