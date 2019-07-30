@@ -30,6 +30,7 @@ echo $AGENT_URL
 cd $DEPS_DIR/$IDX
 curl -k $AGENT_URL > cx-iast-agent.zip
 unzip cx-iast-agent.zip
+chmod 777 ./*
 
 cxAppTag=$(echo $VCAP_APPLICATION | jq -r '.application_name')
 
