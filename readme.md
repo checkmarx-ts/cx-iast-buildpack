@@ -5,7 +5,7 @@ This buildpack provides CxIAST Agent Instrumentation for Java applictions runnin
 # Usage
 
 ## User provided service
-Create a user provided service named checkmarx and bind it to your application. In its credentials specify the iast_server key pointing to your CxIAST server. The buildpack will download the agent from this server.
+Create a user provided service named ```checkmarx``` and bind it to your application. In its credentials specify the ```iast_server``` key pointing to your CxIAST server. The buildpack will download the agent from this server.
 
 For example:
 ```
@@ -30,8 +30,9 @@ For example:
 ```
 
 ## Deploy with a manifest file
-Create a manifest.yml file with content similar to this and specify the buildpacks in this order. Then launch your application with ```cf push```
+Create a ```manifest.yml``` file with content similar to this and specify the buildpacks in this order. Then launch your application with ```cf push```. Bulid pack order is important because ```java_buildpack``` acts as the final buildpack.
 ```
+# manifest.yml
 ---
 applications:
 - name: YOUR-APP
@@ -50,13 +51,13 @@ Specify multiple build packs on the command line like this:
 
 # Configuration
 ## cxAppTag
-The default cxAppTag value is the application's name in Cloud Foundry. Override this by setting a ```cxAppTag``` environment variable for the application.
+The default ```cxAppTag``` value is the application's name in Cloud Foundry. Override this by setting a ```cxAppTag``` environment variable for the application in Cloud Foundry.
 
 ## cxTeam
-The team is CxServer. Override this by setting a ```cxTeam```` environment variable. The team must exist on the CxIAST Server it will not be created automatically.
+The default team is ```CxServer```. Override this by setting a ```cxTeam```` environment variable. The team must exist on the CxIAST Server - it will not be created automatically.
 
 # Logging
-The configuration/checkmarx-logback.xml is a modified log configuration from the standard agent. It enables the STDOUT appender at the INFO level so logs will be picked up by Cloud Foundry Loggregator. 
+The configuration/checkmarx-logback.xml is a modified log configuration from the standard agent. It enables the STDOUT appender at the INFO level so logs will be picked up by the Cloud Foundry Loggregator and be seen by ```cf logs``` command and be included in any log drains. 
 
 # References
 * https://github.com/cloudfoundry/java-buildpack/blob/master/docs/framework-multi_buildpack.md
