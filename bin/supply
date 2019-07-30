@@ -31,7 +31,7 @@ cd $DEPS_DIR/$IDX
 curl -k $AGENT_URL > cx-iast-agent.zip
 unzip cx-iast-agent.zip
 
-cxAppTag="MyApp"
+cxAppTag=$(echo $VCAP_APPLICATION | jq -r '.application_name')
 
 echo "---" > config.yml
 echo "name: cx-iast-buildpack" >> config.yml
@@ -42,9 +42,9 @@ echo "    - "-Xverify:none"" >> config.yml
 echo "    system_properties:" >> config.yml
 echo "      cxAppTag: $cxAppTag" >> config.yml
 echo "      cxTeam: CxServer" >> config.yml
-echo "      iast.home: $DEPS_DIR/$IDX" >> config.yml
-#echo "    javaagents:" >> config.yml
-#echo "    - $DEPS_DIR/$IDX/cx-launcher.jar" >> config.yml
+echo "      iast.home: /home/vcap/deps/$IDX" >> config.yml
+echo "    javaagents:" >> config.yml
+echo "    - /home/vcap/deps/$IDX/cx-launcher.jar" >> config.yml
 
 ls -alR $DEPS_DIR/$IDX
 cat config.yml
