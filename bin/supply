@@ -20,7 +20,6 @@ echo "cx-iast-buildpack: Agent url is: $AGENT_URL"
 cd $DEPS_DIR/$IDX
 curl -k $AGENT_URL > cx-iast-agent.zip
 unzip cx-iast-agent.zip
-chmod 777 ./*
 
 # Update the log file to enable std out logging so iast agent logs are picked up by Cloud Foundry.
 cp $BP/configuration//checkmarx-logback.xml ./
