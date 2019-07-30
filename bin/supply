@@ -22,6 +22,10 @@ curl -k $AGENT_URL > cx-iast-agent.zip
 unzip cx-iast-agent.zip
 chmod 777 ./*
 
+# Update the log file to enable std out logging so iast agent logs are picked up by Cloud Foundry.
+cp $BP/configuration//checkmarx-logback.xml ./
+jar uf cx-agent.jar checkmarx-logback.xml
+
 
 # Default cxAppTag to application name if not set as an env var
 if [[ -z "$cxAppTag" ]]
