@@ -1,6 +1,14 @@
 #!/bin/bash
 set -euo pipefail
 echo "supply running"
+BUILD_DIR=$1
+CACHE_DIR=$2
+DEPS_DIR=$3
+IDX=$4
+echo $BUILD_DIR
+echo $CACHE_DIR
+echo $DEPS_DIR
+echo $IDX
 
 BP=$(dirname "$(dirname $0)")
 echo $BP
@@ -9,5 +17,6 @@ which curl
 which unzip
 which zip
 which jq
+which sed
 echo "environment:"
 env
