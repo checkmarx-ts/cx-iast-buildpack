@@ -43,8 +43,8 @@ echo "    system_properties:" >> config.yml
 echo "      cxAppTag: $cxAppTag" >> config.yml
 echo "      cxTeam: CxServer" >> config.yml
 echo "      iast.home: $DEPS_DIR/$IDX" >> config.yml
-echo "    javaagents:" >> config.yml
-echo "    - $DEPS_DIR/$IDX/cx-launcher.jar" >> config.yml
+#echo "    javaagents:" >> config.yml
+#echo "    - $DEPS_DIR/$IDX/cx-launcher.jar" >> config.yml
 
 ls -alR $DEPS_DIR/$IDX
 cat config.yml
