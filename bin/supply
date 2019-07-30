@@ -22,7 +22,7 @@ echo "environment:"
 env
 
 
-IAST_SERVER=$(echo $VCAP_SERVICES | jq '.["user-provided"][] | select (.name | contains("checkmarx")).credentials.iast_server')
+IAST_SERVER=$(echo $VCAP_SERVICES | jq -r '.["user-provided"][] | select (.name | contains("checkmarx")).credentials.iast_server')
 AGENT_URL="$IAST_SERVER/iast/compilation/download/JAVA"
 
 echo $IAST_SERVER
