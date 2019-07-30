@@ -28,8 +28,8 @@ For example:
  }
 }
 ```
-
-## Deploy with a manifest file
+## Deployment
+### Deploy with a manifest file
 Create a ```manifest.yml``` file with content similar to this and specify the buildpacks in this order. Then launch your application with ```cf push```. Bulid pack order is important because ```java_buildpack``` acts as the final buildpack.
 ```
 # manifest.yml
@@ -45,22 +45,26 @@ applications:
   timeout: 180
   ```
 
-## Deploy with cf push
+### Deploy with cf push
 Specify multiple build packs on the command line like this:
 ```cf push YOUR-APP -b https://github.com/checkmarx-ts/cx-iast-buildpack.git -b java_buildpack```
+
+### Agent activation & Buildpack detection
+Currently, the agent is always active and the Buildpack will always perform Java instrumentation whenever it is used. To control the agent activation by env you should change the Buildpack specification with your existing tooling.
+
 
 # Configuration
 ## cxAppTag
 The default ```cxAppTag``` value is the application's name in Cloud Foundry. Override this by setting a ```cxAppTag``` environment variable for the application in Cloud Foundry.
 
 ## cxTeam
-The default team is ```CxServer```. Override this by setting a ```cxTeam```` environment variable. The team must exist on the CxIAST Server - it will not be created automatically.
+The default team is ```CxServer```. Override this by setting a ```cxTeam``` environment variable. The team must exist on the CxIAST Server - it will not be created automatically.
 
 ## Timeout
 If the app doesn't start fast enough it may be due to initial instrumentation. I recommened setting your timeout to 180 seconds when using this buidpack. 
 
 # Logging
-The configuration/checkmarx-logback.xml is a modified log configuration from the standard agent. It enables the STDOUT appender at the INFO level so logs will be picked up by the Cloud Foundry Loggregator and be seen by ```cf logs``` command and be included in any log drains. 
+The ‘’’configuration/checkmarx-logback.xml’’’ is a modified log configuration from the standard agent. It enables the STDOUT appender at the INFO level so logs will be picked up by the Cloud Foundry Loggregator and be seen by ```cf logs``` command and be included in any log drains. 
 
 # References
 * https://github.com/cloudfoundry/java-buildpack/blob/master/docs/framework-multi_buildpack.md
