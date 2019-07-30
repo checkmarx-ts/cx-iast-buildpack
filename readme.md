@@ -55,6 +55,8 @@ The default cxAppTag value is the application's name in Cloud Foundry. Override 
 ## cxTeam
 The team is CxServer. Override this by setting a ```cxTeam```` environment variable. The team must exist on the CxIAST Server it will not be created automatically.
 
+# Logging
+The configuration/checkmarx-logback.xml is a modified log configuration from the standard agent. It enables the STDOUT appender at the INFO level so logs will be picked up by Cloud Foundry Loggregator. 
 
 # References
 * https://github.com/cloudfoundry/java-buildpack/blob/master/docs/framework-multi_buildpack.md
