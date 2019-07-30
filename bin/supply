@@ -1,4 +1,13 @@
 #!/bin/bash
-
+set -euo pipefail
 echo "supply running"
-exit 0
+
+BP=$(dirname "$(dirname $0)")
+echo $BP
+echo $1
+which curl
+which unzip
+which zip
+which jq
+echo "environment:"
+env
