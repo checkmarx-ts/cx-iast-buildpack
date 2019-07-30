@@ -1,39 +1,41 @@
 #!/bin/bash
 set -euo pipefail
-echo "supply running"
+echo "cx-iast-buildpack: supply running"
 BUILD_DIR=$1
 CACHE_DIR=$2
 DEPS_DIR=$3
 IDX=$4
-echo $BUILD_DIR
-echo $CACHE_DIR
-echo $DEPS_DIR
-echo $IDX
 
 BP=$(dirname "$(dirname $0)")
-echo $BP
-echo $1
-which curl
-which unzip
-which zip
-which jq
-which sed
-echo "environment:"
-env
-
 
 IAST_SERVER=$(echo $VCAP_SERVICES | jq -r '.["user-provided"][] | select (.name | contains("checkmarx")).credentials.iast_server')
+if [[ -z IAST_SERVER ]]
+then
+  echo "cx-iast-buildpack: Error: A user provided service named checkmarx with credentials.iast_server key was not found in VCAP_SERVICES.user-provided."
+  exit 1
+fi
 AGENT_URL="$IAST_SERVER/iast/compilation/download/JAVA"
 
-echo $IAST_SERVER
-echo $AGENT_URL
+echo "cx-iast-buildpack: Agent url is: $AGENT_URL"
 cd $DEPS_DIR/$IDX
 curl -k $AGENT_URL > cx-iast-agent.zip
 unzip cx-iast-agent.zip
 chmod 777 ./*
 
-cxAppTag=$(echo $VCAP_APPLICATION | jq -r '.application_name')
 
+# Default cxAppTag to application name if not set as an env var
+if [[ -z "$cxAppTag" ]]
+then
+  cxAppTag=$(echo $VCAP_APPLICATION | jq -r '.application_name')
+fi
+
+# Default team to CxServer if not set as env var
+if [[ -z "$cxTeam" ]]
+then
+  cxTeam="CxServer"
+fi
+
+# Write out the config.yml file for our multi buildpack options
 echo "---" > config.yml
 echo "name: cx-iast-buildpack" >> config.yml
 echo "config:" >> config.yml
@@ -42,13 +44,10 @@ echo "    preformatted_options:" >> config.yml
 echo "    - "-Xverify:none"" >> config.yml
 echo "    system_properties:" >> config.yml
 echo "      cxAppTag: $cxAppTag" >> config.yml
-echo "      cxTeam: CxServer" >> config.yml
+echo "      cxTeam: $cxTeam" >> config.yml
 echo "      iast.home: /home/vcap/deps/$IDX" >> config.yml
 echo "    javaagents:" >> config.yml
 echo "    - /vcap/deps/$IDX/cx-launcher.jar" >> config.yml
 
-ls -alR $DEPS_DIR/$IDX
+echo "cx-iast-buildpack: using this config: "
 cat config.yml
-
-
-
