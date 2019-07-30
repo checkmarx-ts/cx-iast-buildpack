@@ -1,0 +1,4 @@
+#!/bin/bash
+
+echo "Detect running"
+exit 0

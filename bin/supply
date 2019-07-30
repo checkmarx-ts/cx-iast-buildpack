@@ -1,0 +1,4 @@
+#!/bin/bash
+
+echo "supply running"
+exit 0
