@@ -1,5 +1,5 @@
 #!/bin/bash
-set -euo pipefail
+
 echo "cx-iast-buildpack: supply running"
 BUILD_DIR=$1
 CACHE_DIR=$2
