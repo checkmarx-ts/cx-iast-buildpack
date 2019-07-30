@@ -1,1 +1,62 @@
 # Cx IAST Cloud Foundry Buildpack Support
+
+This buildpack provides CxIAST Agent Instrumentation for Java applictions running on Cloud Foundry. It is designed to be used with the official Cloud Foundry Java Buildpack in a multi buildpack approach.
+
+# Usage
+
+## User provided service
+Create a user provided service named checkmarx and bind it to your application. In its credentials specify the iast_server key pointing to your CxIAST server. The buildpack will download the agent from this server.
+
+For example:
+```
+{
+ "VCAP_SERVICES": {
+  "user-provided": [
+   {
+    "binding_name": "",
+    "credentials": {
+     "iast_server": "https://YOUR-CXIAST-SERVER:YOUR-PORT"
+    },
+    "instance_name": "checkmarx",
+    "label": "user-provided",
+    "name": "checkmarx",
+    "syslog_drain_url": "",
+    "tags": [],
+    "volume_mounts": []
+   }
+  ]
+ }
+}
+```
+
+## Deploy with a manifest file
+Create a manifest.yml file with content similar to this and specify the buildpacks in this order. Then launch your application with ```cf push```
+```
+---
+applications:
+- name: YOUR-APP
+  memory: 1G
+  instances: 1
+  path: ./target/cloudfoundry-demo-0.0.1-SNAPSHOT.jar  
+  buildpacks:
+    - https://github.com/checkmarx-ts/cx-iast-buildpack.git
+    - java_buildpack   
+  timeout: 180
+  ```
+
+## Deploy with cf push
+Specify multiple build packs on the command line like this:
+```cf push YOUR-APP -b https://github.com/checkmarx-ts/cx-iast-buildpack.git -b java_buildpack```
+
+# Configuration
+## cxAppTag
+The default cxAppTag value is the application's name in Cloud Foundry. Override this by setting a ```cxAppTag``` environment variable for the application.
+
+## cxTeam
+The team is CxServer. Override this by setting a ```cxTeam```` environment variable. The team must exist on the CxIAST Server it will not be created automatically.
+
+
+# References
+* https://github.com/cloudfoundry/java-buildpack/blob/master/docs/framework-multi_buildpack.md
+* https://docs.cloudfoundry.org/buildpacks/use-multiple-buildpacks.html
+* https://docs.cloudfoundry.org/buildpacks/developing-buildpacks.html
