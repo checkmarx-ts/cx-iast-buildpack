@@ -56,6 +56,9 @@ The default ```cxAppTag``` value is the application's name in Cloud Foundry. Ove
 ## cxTeam
 The default team is ```CxServer```. Override this by setting a ```cxTeam```` environment variable. The team must exist on the CxIAST Server - it will not be created automatically.
 
+## Timeout
+If the app doesn't start fast enough it may be due to initial instrumentation. I recommened setting your timeout to 180 seconds when using this buidpack. 
+
 # Logging
 The configuration/checkmarx-logback.xml is a modified log configuration from the standard agent. It enables the STDOUT appender at the INFO level so logs will be picked up by the Cloud Foundry Loggregator and be seen by ```cf logs``` command and be included in any log drains. 
 
