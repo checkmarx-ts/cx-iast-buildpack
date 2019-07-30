@@ -27,7 +27,7 @@ AGENT_URL="$IAST_SERVER/iast/compilation/download/JAVA"
 
 echo $IAST_SERVER
 echo $AGENT_URL
-
+cd $DEPS_DIR/$IDX
 curl -k $AGENT_URL > cx-iast-agent.zip
 unzip cx-iast-agent.zip
 
