@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "cx-iast-buildpack: supply running"
+[ "$JBP_LOG_LEVEL" = "DEBUG" ] && echo "cx-iast-buildpack: supply running"
 BUILD_DIR=$1
 CACHE_DIR=$2
 DEPS_DIR=$3
@@ -11,12 +11,12 @@ BP=$(dirname "$(dirname $0)")
 IAST_SERVER=$(echo $VCAP_SERVICES | jq -r '.["user-provided"][] | select (.name | contains("checkmarx")).credentials.iast_server')
 if [[ -z IAST_SERVER ]]
 then
-  echo "cx-iast-buildpack: Error: A user provided service named checkmarx with credentials.iast_server key was not found in VCAP_SERVICES.user-provided."
+  [ "$JBP_LOG_LEVEL" = "DEBUG" ] && echo "cx-iast-buildpack: Error: A user provided service named checkmarx with credentials.iast_server key was not found in VCAP_SERVICES.user-provided."
   exit 1
 fi
 AGENT_URL="$IAST_SERVER/iast/compilation/download/JAVA"
 
-echo "cx-iast-buildpack: Agent url is: $AGENT_URL"
+[ "$JBP_LOG_LEVEL" = "DEBUG" ] && echo "cx-iast-buildpack: Agent url is: $AGENT_URL"
 cd $DEPS_DIR/$IDX
 curl -k $AGENT_URL > cx-iast-agent.zip
 unzip cx-iast-agent.zip
@@ -52,5 +52,5 @@ echo "      iast.home: /home/vcap/deps/$IDX" >> config.yml
 echo "    javaagents:" >> config.yml
 echo "    - /vcap/deps/$IDX/cx-launcher.jar" >> config.yml
 
-echo "cx-iast-buildpack: using this config: "
+[ "$JBP_LOG_LEVEL" = "DEBUG" ] && echo "cx-iast-buildpack: using this config: "
 cat config.yml
