@@ -7,7 +7,7 @@ DEPS_DIR=$3
 IDX=$4
 
 BP=$(dirname "$(dirname $0)")
-
+echo $VCAP_SERVICES
 IAST_SERVER=$(echo $VCAP_SERVICES | jq -r '.["user-provided"][] | select (.name | contains("checkmarx")).credentials.iast_server')
 if [[ -z IAST_SERVER ]]
 then
