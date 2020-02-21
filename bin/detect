@@ -1,4 +1,11 @@
 #!/bin/bash
 
-echo "Detect running"
-exit 0
+IAST_SERVER=$(echo $VCAP_SERVICES | jq -r '.["user-provided"][] | select (.name | contains("checkmarx")).credentials.iast_server')
+if [[ -n IAST_SERVER ]]
+then
+  [ "$JBP_LOG_LEVEL" = "DEBUG" ] && echo "cx-iast-buildpack: checkmarx iast server detected in user provided service"
+  exit 0
+fi
+
+[ "$JBP_LOG_LEVEL" = "DEBUG" ] && echo "cx-iast-buildpack: checkmarx iast server was not detected in user provided service"
+exit 1
