@@ -48,6 +48,7 @@ echo "    - "-Xverify:none"" >> config.yml
 echo "    system_properties:" >> config.yml
 echo "      cxAppTag: $cxAppTag" >> config.yml
 echo "      cxTeam: $cxTeam" >> config.yml
+echo "      cx.logToConsole: true" >> config.yml
 echo "      iast.home: /home/vcap/deps/$IDX" >> config.yml
 echo "    javaagents:" >> config.yml
 echo "    - /vcap/deps/$IDX/cx-launcher.jar" >> config.yml
