@@ -1,35 +1,38 @@
 #!/bin/bash
 
+set -e
+
 echo "cx-iast-buildpack: supply running"
 BUILD_DIR=$1
 CACHE_DIR=$2
 DEPS_DIR=$3
 IDX=$4
+BUILDPACK_DIR=$(dirname "$(dirname $0)")
 
-BP=$(dirname "$(dirname $0)")
-echo $VCAP_SERVICES
-IAST_SERVER=$(echo $VCAP_SERVICES | jq -r '.["user-provided"][] | select (.name | contains("checkmarx")).credentials.iast_server')
-if [[ -z IAST_SERVER ]]
+echo "cx-iast-buildpack: \$VCAP_SERVICES=$VCAP_SERVICES"
+echo "cx-iast-buildpack: \$VCAP_APPLICATION=$VCAP_APPLICATION"
+
+IAST_SERVER=$(echo $VCAP_SERVICES | jq -r '.["user-provided"][]? | select (.name == "checkmarx").credentials.iast_server')
+APP_NAME=$(echo $VCAP_APPLICATION | jq -r '.application_name')
+echo "cx-iast-buildpack: \$IAST_SERVER=$IAST_SERVER"
+echo "cx-iast-buildpack: \$APP_NAME=$APP_NAME"
+if [[ -z $IAST_SERVER ]]
 then
-  echo "cx-iast-buildpack: Error: A user provided service named checkmarx with credentials.iast_server key was not found in VCAP_SERVICES.user-provided."
+  echo "cx-iast-buildpack: ERROR: A user provided service named checkmarx with credentials.iast_server key was not found in VCAP_SERVICES.user-provided."
+  echo "cx-iast-buildpack: Agent cannot be applied"
   exit 1
 fi
 AGENT_URL="$IAST_SERVER/iast/compilation/download/JAVA"
+echo "cx-iast-buildpack: Agent URL is: $AGENT_URL"
 
-echo "cx-iast-buildpack: Agent url is: $AGENT_URL"
 cd $DEPS_DIR/$IDX
 curl -k $AGENT_URL > cx-iast-agent.zip
 unzip cx-iast-agent.zip
 
-# Update the log file to enable std out logging so iast agent logs are picked up by Cloud Foundry.
-cp $BP/configuration//checkmarx-logback.xml ./
-zip -q -u cx-agent.jar -i checkmarx-logback.xml
-
-
 # Default cxAppTag to application name if not set as an env var
 if [[ -z "$cxAppTag" ]]
 then
-  cxAppTag=$(echo $VCAP_APPLICATION | jq -r '.application_name')
+  cxAppTag=$APP_NAME
 fi
 
 # Default team to CxServer if not set as env var
@@ -38,19 +41,25 @@ then
   cxTeam="CxServer"
 fi
 
-# Write out the config.yml file for our multi buildpack options
-echo "---" > config.yml
-echo "name: cx-iast-buildpack" >> config.yml
-echo "config:" >> config.yml
-echo "  java_opts:" >> config.yml
-echo "    preformatted_options:" >> config.yml
-echo "    - "-Xverify:none"" >> config.yml
-echo "    system_properties:" >> config.yml
-echo "      cxAppTag: $cxAppTag" >> config.yml
-echo "      cxTeam: $cxTeam" >> config.yml
-echo "      iast.home: /home/vcap/deps/$IDX" >> config.yml
-echo "    javaagents:" >> config.yml
-echo "    - /vcap/deps/$IDX/cx-launcher.jar" >> config.yml
+# Disable cache (no point, when running in a container)
+echo "cx-iast-buildpack: setting enableWeavedClassCache=false"
+echo "" >> cx_agent.properties
+echo "enableWeavedClassCache=false" >> cx_agent.properties
 
-echo "cx-iast-buildpack: using this config: "
+# Write out the config.yml file for our multi buildpack options
+echo "---"                                     > config.yml
+echo "name: cx-iast-buildpack"                >> config.yml
+echo "config:"                                >> config.yml
+echo "  java_opts:"                           >> config.yml
+echo "    preformatted_options:"              >> config.yml
+echo "    - \"-Xverify:none\""                >> config.yml
+echo "    system_properties:"                 >> config.yml
+echo "      cx.logToConsole: \"true\""        >> config.yml
+echo "      cx.appName:      \"$APP_NAME\""   >> config.yml
+echo "      cxAppTag:        \"$cxAppTag\""   >> config.yml
+echo "      cxTeam:          \"$cxTeam\""     >> config.yml
+echo "    javaagents:"                        >> config.yml
+echo "    - /vcap/deps/$IDX/cx-launcher.jar"  >> config.yml
+
+echo "cx-iast-buildpack: using this config:"
 cat config.yml
