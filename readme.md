@@ -1,6 +1,10 @@
 # Cx IAST Cloud Foundry Buildpack Support
 
-This buildpack provides CxIAST Agent Instrumentation for SpringBoot or Tomcat Java applications running on Cloud Foundry. It is designed to be used with the official Cloud Foundry Java Buildpack in a multi buildpack approach.
+This buildpack provides CxIAST Agent Instrumentation for SpringBoot or Tomcat Java applications running on Cloud Foundry. It is designed to be used with the official Cloud Foundry Java Buildpack in a multi buildpack approach.  
+*This buildpack required IAST v3.7 and up*
+
+# NOTE
+This buildpack is no longer required, as this was integrated in the official CF Java Buildpack. Follow the instructions in your IAST installation under http://manager-url:8380/iast-ui/#!/AgentDownloadWalkthrough
 
 # Usage
 
